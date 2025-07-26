@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GestAnimal Nardelli - Acompanhamento de Gestação com Animação</title>
+    <style>
+        /* Reset e Estilos Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #ff7e5f;
+            --accent-color: #6bd425;
+            --dark-color: #333;
+            --light-color: #f8f9fa;
+            --horse-color: #8b5a2b;
+            --pig-color: #ffb6c1;
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Cabeçalho Animado */
+        .animated-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animated-header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('cavloeporco.jpeg') center/cover no-repeat;
+            opacity: 0.3; /* Ajuste a opacidade para o efeito desejado */
+            z-index: 0;
+        }
+
+        .animated-header > .container,
+        .animated-header .animal-silhouettes {
+            position: relative;
+            z-index: 1;
+        }
+
+        .animated-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s ease;
+        }
+
+        .header-icon {
+            height: 0.9em; /* Tamanho relativo ao texto */
+            vertical-align: -0.1em; /* Ajuste fino do alinhamento vertical */
+            margin: 0 0.2em; /* Espaçamento horizontal */
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); /* Sombra para dar profundidade */
+        }
+
+        .animated-header p {
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.5s forwards;
+        }
+
+        .animal-silhouettes {
+            display: flex;
+            justify-content: center;
+            gap: 5rem;
+            margin-top: 2rem;
+            height: 120px;
+        }
+
+        .horse, .pig {
+            width: 120px;
+            height: 120px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: all 0.3s ease;
+        }
+
+        .horse {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23ffffff" d="M320 32c0-9.9-4.5-19.2-12.3-25.2S289.8-1.4 280.2 1l-17.7 4.4C253.4 7.8 248.2 12 244.4 16l-89.5 96.1-33.3-21.6c-9.6-6.2-21.4-7.4-32.2-3.1s-18.1 13.3-19.9 24.5l-2.5 15.4c-1.5 9.2 1.5 18.5 8.1 24.9l104.6 104.6-46.5 46.5c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l55.1-55.1 23.3 23.3c-29.8 24.9-48.8 60.5-51.8 100.2l-3.6 48.2c-1.3 17.5 12.2 32.4 29.7 32.4h16.3c16.5 0 30-13.5 30-30s-13.5-30-30-30h-2.1l2.1-28.4c2.3-30.9 18.3-58.5 41.6-76.5l23.3 23.3 33.1-33.1 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3l-13.3-13.3 46.5-46.5 104.6 104.6c6.6 6.4 15.9 9.4 25.1 7.9l15.4-2.5c11.2-1.8 20.2-9.1 24.5-19.9s3.1-22.6-3.1-32.2L412.1 224l96.1-89.5c4-3.8 8.2-9 10.6-14.2l4.4-17.7c2.4-9.6 1.1-20-3.2-28.2s-12.3-13.9-21.9-13.9H320z"/></svg>');
+            animation: bounce 3s infinite;
+        }
+
+        .pig {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="%23ffffff" d="M332.8 128c-13.1 0-25.3 3.4-36.1 9.4c-3.8-21.4-11.3-41.6-22.3-59.4C285.4 50.4 298.4 32 313.9 32c12.8 0 24.9 7.9 29.8 19.9l2.4 5.9c1.3 3.1 4.2 5.2 7.5 5.2h22.5c10.2 0 18.5 8.3 18.5 18.5s-8.3 18.5-18.5 18.5H352c-15.9 0-30.5 10-33.2 25.9c-3.2-1-6.5-1.9-9.9-1.9zm-92.4 56C231.1 176.5 224 163.5 224 149.5c0-11.5 6.2-22.1 15.8-27.8c-3.4-13-7.8-25.5-13.2-37.1C211.2 61.4 189.5 48 165.5 48H144c-35.3 0-64 28.7-64 64v16c0 17.7-14.3 32-32 32s-32-14.3-32-32V112C16 50.1 66.1 0 128 0h37.5c38.4 0 72.9 20.7 90.7 52.9c10.6 19.1 18.2 40.1 22.1 53.3c13.5-7.1 28.8-11.2 44.5-11.2c44.2 0 80 35.8 80 80c0 5.5-.6 10.9-1.6 16c.1 0 .2 0 .3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32c-2.2 0-4.4-.2-6.5-.6c12.6 23.3 19.5 49.9 19.5 77.6c0 88.4-71.6 160-160 160s-160-71.6-160-160c0-27.7 6.9-54.3 19.5-77.6c-2.1.4-4.3.6-6.5.6c-17.7 0-32-14.3-32-32s14.3-32 32-32c.1 0 .2 0 .3 0c-1-5.1-1.6-10.5-1.6-16c0-44.2 35.8-80 80-80z"/></svg>');
+            animation: bounce 3s infinite 0.5s;
+        }
+
+        /* Navegação Fixa */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .sticky-nav ul {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+        }
+
+        .sticky-nav li {
+            padding: 1rem 2rem;
+        }
+
+        .sticky-nav a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 600;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .sticky-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .sticky-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s;
+        }
+
+        .sticky-nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Seções de Espécies */
+        .species-section {
+            padding: 4rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .species-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .pregnancy-tracker {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .timeline {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline-progress {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0;
+            transition: width 1s ease;
+        }
+
+        .pregnancy-info {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .fetal-development-animation {
+            flex: 1;
+            height: 300px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .development-slider {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .pregnancy-data {
+            flex: 1;
+        }
+
+        .pregnancy-data h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+
+        .pregnancy-data ul {
+            margin-bottom: 2rem;
+            list-style-position: inside;
+        }
+
+        /* Calculadora */
+        .calculator-section {
+            padding: 4rem 0;
+        }
+
+        .calculator-container {
+            display: flex;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .calculator-form {
+            flex: 1;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .calculator-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .calculator-form select,
+        .calculator-form input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        .calculator-results {
+            flex: 1;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .progress-circle {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .circular-chart {
+            width: 150px;
+            height: 150px;
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: #eee;
+            stroke-width: 3;
+        }
+
+        .circle-fill {
+            fill: none;
+            stroke: var(--success-color);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 0, 100;
+            transition: stroke-dasharray 1s ease;
+        }
+
+        .percentage-text {
+            fill: var(--dark-color);
+            font-size: 0.5em;
+            text-anchor: middle;
+            font-weight: bold;
+        }
+
+        /* Botões */
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--primary-color));
+            background-size: 200% 100%;
+            background-position: 100% 0;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-position 0.5s ease;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite; /* <-- Animação de pulso constante */
+        }
+
+        .cta-button:hover {
+            animation: none; /* <-- Para a animação ao passar o mouse */
+            transform: translateY(-3px) scale(1.05); /* <-- Efeito de levantar e aumentar */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            background-position: 0 0;
+        }
+
+        .cta-button:active {
+            transform: translateY(-1px) scale(1.02); /* <-- Ajuste no clique */
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+
+        /* Rodapé */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% {
+                box-shadow: 0 0 4px rgba(74, 111, 165, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 12px rgba(74, 111, 165, 1);
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .pregnancy-info {
+                flex-direction: column;
+            }
+            
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            .animal-silhouettes {
+                gap: 2rem;
+            }
+            
+            .sticky-nav ul {
+                flex-wrap: wrap;
+            }
+            
+            .sticky-nav li {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        /* Estilos para a tabela de marcos */
+        .milestone-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .milestone-table th, .milestone-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .milestone-table th {
+            background-color: #f2f2f2;
+        }
+
+        .milestone-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Alertas */
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+        /* Controles da animação */
+        .animation-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .animation-controls button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            animation: glow-pulse 2s infinite;
+        }
+
+        .animation-controls button:hover {
+            animation: none;
+            transform: scale(1.1);
+            background-color: var(--secondary-color);
+            box-shadow: 0 0 10px var(--secondary-color), 0 0 20px rgba(255, 126, 95, 0.5); /* <-- Efeito de brilho */
+        }
+
+        .animation-controls button:active {
+            transform: scale(1.0);
+            background-color: var(--primary-color);
+        }
+
+        .animation-progress {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+        }
+
+        .animation-progress::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .animation-progress::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        /* Estilo para marcos passados */
+        .passed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header class="animated-header">
+        <div class="container">
+            <h1>GestAnimal <img class="header-icon" src="https://img.icons8.com/ios-filled/50/horse.png" alt="Ícone de cavalo"/> <img class="header-icon" src="https://img.icons8.com/ios-filled/50/ffffff/pig.png" alt="Ícone de porco"/> Nardelli</h1>
+            <p>Acompanhamento visual da gestação equina e suína</p>
+        </div>
+    </header>
+
+    <nav class="sticky-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#equinos">Equinos</a></li>
+                <li><a href="#suinos">Suínos</a></li>
+                <li><a href="#calculadora">Calculadora</a></li>
+                <li><a href="#sobre">Sobre</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="equinos" class="species-section">
+            <h2>Gestão Equina</h2>
+            <div class="pregnancy-tracker">
+                <div class="timeline">
+                    <div class="timeline-progress"></div>
+                </div>
+                <div class="pregnancy-info">
+                    <div class="fetal-development-animation">
+                        <canvas id="horse-animation" width="400" height="300"></canvas>
+                    </div>
+                    <div class="pregnancy-data">
+                        <h3>Informações Chave</h3>
+                        <ul>
+                            <li>Duração média: 335-342 dias (11 meses)</li>
+                            <li>Variação normal: 320-370 dias</li>
+                            <li>Primeiro trimestre: Formação básica</li>
+                            <li>Segundo trimestre: Crescimento rápido</li>
+                            <li>Terceiro trimestre: Maturação final</li>
+                        </ul>
+
+                        <div class="animation-controls">
+                            <button id="horse-prev"><</button>
+                            <input type="range" min="0" max="100" value="0" class="animation-progress" id="horse-slider">
+                            <button id="horse-next">></button>
+                            <span id="horse-progress-text">0%</span>
+                        </div>
+
+                        <button class="cta-button" id="calc-equino">Calcular Data do Parto</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="suinos" class="species-section">
+            <h2>Gestão Suína</h2>
+            <div class="pregnancy-tracker">
+                <div class="timeline">
+                    <div class="timeline-progress"></div>
+                </div>
+                <div class="pregnancy-info">
+                    <div class="fetal-development-animation">
+                        <canvas id="pig-animation" width="400" height="300"></canvas>
+                    </div>
+                    <div class="pregnancy-data">
+                        <h3>Informações Chave</h3>
+                        <ul>
+                            <li>Duração média: 114 dias (3 meses, 3 semanas e 3 dias)</li>
+                            <li>Variação normal: 112-116 dias</li>
+                            <li>Primeiro mês: Implantação embrionária</li>
+                            <li>Segundo mês: Desenvolvimento rápido</li>
+                            <li>Terceiro mês: Preparação para o parto</li>
+                        </ul>
+
+                        <div class="animation-controls">
+                            <button id="pig-prev"><</button>
+                            <input type="range" min="0" max="100" value="0" class="animation-progress" id="pig-slider">
+                            <button id="pig-next">></button>
+                            <span id="pig-progress-text">0%</span>
+                        </div>
+
+                        <button class="cta-button" id="calc-suino">Calcular Data do Parto</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="calculadora" class="calculator-section">
+            <h2>Calculadora de Gestação</h2>
+            <div class="calculator-container">
+                <div class="calculator-form">
+                    <label for="animal-type">Tipo de Animal:</label>
+                    <select id="animal-type">
+                        <option value="equino">Equino</option>
+                        <option value="suino">Suíno</option>
+                    </select>
+                    
+                    <label for="insemination-date">Data da Inseminação/Cobertura:</label>
+                    <input type="date" id="insemination-date">
+                    
+                    <button class="cta-button" id="calculate">Calcular</button>
+                </div>
+                <div class="calculator-results">
+                    <h3>Resultados</h3>
+                    <div id="results-container">
+                        <p>Preencha os dados para calcular as datas importantes</p>
+                    </div>
+                    <div class="progress-circle">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path class="circle-fill"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <text x="18" y="20.35" class="percentage-text">0%</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sobre" class="species-section">
+            <h2>Sobre o GestAnimal Nardelli</h2>
+            <div class="pregnancy-data">
+                <h3>Animação de Desenvolvimento Fetal</h3>
+                <p>Nossa ferramenta oferece uma representação visual precisa do desenvolvimento do feto durante toda a gestação:</p>
+                <ul>
+                    <li>Visualização semana a semana das mudanças morfológicas</li>
+                    <li>Comparação proporcional do tamanho fetal</li>
+                    <li>Marcos importantes destacados na animação</li>
+                    <li>Controle manual para visualizar qualquer estágio</li>
+                </ul>
+                <p>As animações são baseadas em dados científicos de desenvolvimento fetal em equinos e suínos.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Thyesko Menão - Todos os direitos reservados</p>
+            <p>Informações veterinárias validadas por especialistas</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animação da linha do tempo
+            const timelineProgress = document.querySelectorAll('.timeline-progress');
+            timelineProgress.forEach(progress => {
+                progress.style.width = '0';
+                setTimeout(() => {
+                    progress.style.width = '100%';
+                }, 500);
+            });
+
+            // Elementos de controle da animação - Equino
+            const horseSlider = document.getElementById('horse-slider');
+            const horsePrevBtn = document.getElementById('horse-prev');
+            const horseNextBtn = document.getElementById('horse-next');
+            const horseProgressText = document.getElementById('horse-progress-text');
+            
+            // Elementos de controle da animação - Suíno
+            const pigSlider = document.getElementById('pig-slider');
+            const pigPrevBtn = document.getElementById('pig-prev');
+            const pigNextBtn = document.getElementById('pig-next');
+            const pigProgressText = document.getElementById('pig-progress-text');
+
+            // Animação do desenvolvimento fetal - Equino
+            const horseCanvas = document.getElementById('horse-animation');
+            const horseCtx = horseCanvas.getContext('2d');
+            
+            // Animação do desenvolvimento fetal - Suíno
+            const pigCanvas = document.getElementById('pig-animation');
+            const pigCtx = pigCanvas.getContext('2d');
+            
+            // Função para desenhar feto equino com detalhes
+            function drawHorseFetus(ctx, progress) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                
+                // Desenhar o útero
+                ctx.beginPath();
+                ctx.ellipse(200, 150, 150, 100, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = '#4a6fa5';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.fillStyle = 'rgba(74, 111, 165, 0.1)';
+                ctx.fill();
+                
+                // Tamanho baseado no progresso (não linear para simular crescimento real)
+                const size = 10 + (progress * 2.5);
+                const yPos = 150;
+                
+                // Corpo principal
+                ctx.beginPath();
+                ctx.ellipse(200, yPos, size, size/1.8, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(139, 90, 43, 0.8)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(139, 90, 43, 1)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Cabeça (aparece após 15%)
+                if (progress > 15) {
+                    const headSize = size/2.5;
+                    ctx.beginPath();
+                    ctx.ellipse(200 + size, yPos - (progress > 50 ? size/8 : 0), 
+                                headSize, headSize/1.5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Olhos (aparecem após 30%)
+                    if (progress > 30) {
+                        ctx.beginPath();
+                        ctx.arc(200 + size + headSize/3, yPos - headSize/4, headSize/8, 0, Math.PI * 2);
+                        ctx.fillStyle = 'black';
+                        ctx.fill();
+                        
+                        // Orelhas (aparecem após 40%)
+                        if (progress > 40) {
+                            ctx.beginPath();
+                            ctx.moveTo(200 + size + headSize/2, yPos - headSize);
+                            ctx.lineTo(200 + size + headSize/3, yPos - headSize*1.3);
+                            ctx.lineTo(200 + size, yPos - headSize);
+                            ctx.fillStyle = 'rgba(139, 90, 43, 0.8)';
+                            ctx.fill();
+                            ctx.stroke();
+                        }
+                    }
+                }
+                
+                // Pernas (aparecem após 25%)
+                if (progress > 25) {
+                    const legWidth = size/8;
+                    const legLength = size * (progress > 60 ? 1.2 : 0.8);
+                    
+                    // Pernas dianteiras
+                    drawLeg(ctx, 200 + size/2, yPos + size/1.8, legWidth, legLength, progress);
+                    drawLeg(ctx, 200 - size/2, yPos + size/1.8, legWidth, legLength, progress);
+                    
+                    // Pernas traseiras (aparecem após 35%)
+                    if (progress > 35) {
+                        drawLeg(ctx, 200 + size/1.5, yPos + size/1.8, legWidth, legLength * 1.1, progress);
+                        drawLeg(ctx, 200 - size/1.5, yPos + size/1.8, legWidth, legLength * 1.1, progress);
+                    }
+                }
+                
+                // Crina e cauda (aparecem após 70%)
+                if (progress > 70) {
+                    ctx.beginPath();
+                    ctx.moveTo(200 + size/1.5, yPos - size/2);
+                    ctx.lineTo(200 + size/3, yPos - size/1.5);
+                    ctx.lineTo(200, yPos - size/1.8);
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(200 - size/1.5, yPos + size/1.2);
+                    ctx.lineTo(200 - size/1.8, yPos + size);
+                    ctx.lineTo(200 - size/2, yPos + size * 1.3);
+                    ctx.stroke();
+                }
+                
+                // Texto informativo
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                
+                if (progress < 5) {
+                    ctx.fillText('Fertilização e formação do zigoto', 200, 50);
+                } else if (progress < 15) {
+                    ctx.fillText('Implantação do embrião no útero', 200, 50);
+                } else if (progress < 30) {
+                    ctx.fillText('Formação dos órgãos principais', 200, 50);
+                } else if (progress < 50) {
+                    ctx.fillText('Desenvolvimento do esqueleto e músculos', 200, 50);
+                } else if (progress < 70) {
+                    ctx.fillText('Crescimento rápido do feto', 200, 50);
+                } else if (progress < 90) {
+                    ctx.fillText('Maturação final dos órgãos', 200, 50);
+                } else {
+                    ctx.fillText('Preparação para o parto', 200, 50);
+                }
+            }
+            
+            // Função auxiliar para desenhar pernas
+            function drawLeg(ctx, x, y, width, length, progress) {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + width/2, y + length * 0.3);
+                ctx.lineTo(x + width/2, y + length);
+                
+                // Casco (aparece após 50%)
+                if (progress > 50) {
+                    ctx.lineTo(x + width, y + length * 1.1);
+                    ctx.lineTo(x - width/2, y + length * 1.1);
+                } else {
+                    ctx.lineTo(x, y + length * 1.1);
+                }
+                
+                ctx.lineTo(x - width/2, y + length * 0.3);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(139, 90, 43, 0.8)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(139, 90, 43, 1)';
+                ctx.stroke();
+            }
+            
+            // Função para desenhar feto suíno com detalhes
+            function drawPigFetus(ctx, progress) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                
+                // Desenhar o útero
+                ctx.beginPath();
+                ctx.ellipse(200, 150, 120, 80, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = '#ff7e5f';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.fillStyle = 'rgba(255, 126, 95, 0.1)';
+                ctx.fill();
+                
+                // Número de fetos (aumenta com o progresso)
+                const fetusCount = Math.min(8, 2 + Math.floor(progress / 15));
+                const fetusSize = 10 + (progress * 1.2);
+                
+                for (let i = 0; i < fetusCount; i++) {
+                    const angle = (i / fetusCount) * Math.PI * 2;
+                    const distance = 60 + (progress / 3);
+                    const x = 200 + Math.cos(angle) * distance;
+                    const y = 150 + Math.sin(angle) * (distance * 0.7);
+                    const individualProgress = Math.min(100, progress - (i * 5));
+                    
+                    if (individualProgress > 0) {
+                        // Corpo
+                        ctx.beginPath();
+                        ctx.ellipse(x, y, fetusSize, fetusSize * 0.8, angle, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255, 182, 193, 0.8)';
+                        ctx.fill();
+                        ctx.strokeStyle = 'rgba(255, 140, 160, 1)';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        
+                        // Cabeça (aparece após 10%)
+                        if (individualProgress > 10) {
+                            ctx.beginPath();
+                            ctx.ellipse(x + fetusSize * 0.9, y, fetusSize * 0.4, fetusSize * 0.3, angle, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.stroke();
+                            
+                            // Focinho (aparece após 25%)
+                            if (individualProgress > 25) {
+                                ctx.beginPath();
+                                ctx.ellipse(x + fetusSize * 1.3, y, fetusSize * 0.2, fetusSize * 0.15, angle, 0, Math.PI * 2);
+                                ctx.fillStyle = 'rgba(255, 200, 200, 0.9)';
+                                ctx.fill();
+                                ctx.stroke();
+                                
+                                // Olhos (aparecem após 30%)
+                                if (individualProgress > 30) {
+                                    ctx.beginPath();
+                                    ctx.arc(x + fetusSize * 1.1, y - fetusSize * 0.1, fetusSize * 0.08, 0, Math.PI * 2);
+                                    ctx.fillStyle = 'black';
+                                    ctx.fill();
+                                }
+                            }
+                        }
+                        
+                        // Pernas (aparecem após 20%)
+                        if (individualProgress > 20) {
+                            const legWidth = fetusSize * 0.15;
+                            const legLength = fetusSize * (individualProgress > 50 ? 0.9 : 0.6);
+                            
+                            // Pernas dianteiras
+                            drawPigLeg(ctx, x + fetusSize * 0.5, y + fetusSize * 0.6, legWidth, legLength, angle);
+                            drawPigLeg(ctx, x - fetusSize * 0.5, y + fetusSize * 0.6, legWidth, legLength, angle);
+                            
+                            // Pernas traseiras (aparecem após 35%)
+                            if (individualProgress > 35) {
+                                drawPigLeg(ctx, x + fetusSize * 0.7, y + fetusSize * 0.6, legWidth, legLength * 1.1, angle);
+                                drawPigLeg(ctx, x - fetusSize * 0.7, y + fetusSize * 0.6, legWidth, legLength * 1.1, angle);
+                            }
+                        }
+                    }
+                }
+                
+                // Texto informativo
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                
+                if (progress < 10) {
+                    ctx.fillText('Fertilização e implantação dos embriões', 200, 50);
+                } else if (progress < 25) {
+                    ctx.fillText('Formação dos sistemas orgânicos básicos', 200, 50);
+                } else if (progress < 40) {
+                    ctx.fillText('Desenvolvimento rápido dos leitões', 200, 50);
+                } else if (progress < 60) {
+                    ctx.fillText('Diferenciação sexual e formação de pelos', 200, 50);
+                } else if (progress < 80) {
+                    ctx.fillText('Ganho de peso e maturação final', 200, 50);
+                } else {
+                    ctx.fillText('Preparação para o parto', 200, 50);
+                }
+            }
+            
+            // Função auxiliar para desenhar pernas de suíno
+            function drawPigLeg(ctx, x, y, width, length, angle) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+                
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(width/2, length * 0.4);
+                ctx.lineTo(width/2, length);
+                ctx.lineTo(0, length * 1.1);
+                ctx.lineTo(-width/2, length);
+                ctx.lineTo(-width/2, length * 0.4);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(255, 182, 193, 0.8)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 140, 160, 1)';
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+            
+            // Controles da animação - Equino
+            horseSlider.addEventListener('input', function() {
+                const progress = parseInt(this.value);
+                drawHorseFetus(horseCtx, progress);
+                horseProgressText.textContent = `${progress}%`;
+                
+                // Atualizar descrição do estágio
+                updateHorseStageDescription(progress);
+            });
+            
+            horsePrevBtn.addEventListener('click', function() {
+                const newValue = Math.max(0, parseInt(horseSlider.value) - 5);
+                horseSlider.value = newValue;
+                horseSlider.dispatchEvent(new Event('input'));
+            });
+            
+            horseNextBtn.addEventListener('click', function() {
+                const newValue = Math.min(100, parseInt(horseSlider.value) + 5);
+                horseSlider.value = newValue;
+                horseSlider.dispatchEvent(new Event('input'));
+            });
+            
+            // Controles da animação - Suíno
+            pigSlider.addEventListener('input', function() {
+                const progress = parseInt(this.value);
+                drawPigFetus(pigCtx, progress);
+                pigProgressText.textContent = `${progress}%`;
+                
+                // Atualizar descrição do estágio
+                updatePigStageDescription(progress);
+            });
+            
+            pigPrevBtn.addEventListener('click', function() {
+                const newValue = Math.max(0, parseInt(pigSlider.value) - 5);
+                pigSlider.value = newValue;
+                pigSlider.dispatchEvent(new Event('input'));
+            });
+            
+            pigNextBtn.addEventListener('click', function() {
+                const newValue = Math.min(100, parseInt(pigSlider.value) + 5);
+                pigSlider.value = newValue;
+                pigSlider.dispatchEvent(new Event('input'));
+            });
+            
+            // Inicializar animações
+            drawHorseFetus(horseCtx, 0);
+            drawPigFetus(pigCtx, 0);
+            
+            // Funções para atualizar descrições dos estágios
+            function updateHorseStageDescription(progress) {
+                // Implementar se necessário
+            }
+            
+            function updatePigStageDescription(progress) {
+                // Implementar se necessário
+            }
+
+            // Calculadora de gestação (código anterior mantido)
+            const calculateBtn = document.getElementById('calculate');
+            const animalType = document.getElementById('animal-type');
+            const inseminationDate = document.getElementById('insemination-date');
+            const resultsContainer = document.getElementById('results-container');
+            const circleFill = document.querySelector('.circle-fill');
+            const percentageText = document.querySelector('.percentage-text');
+            
+            // Botões específicos para cada espécie
+            const calcEquinoBtn = document.getElementById('calc-equino');
+            const calcSuinoBtn = document.getElementById('calc-suino');
+            
+            // Definir data atual como padrão
+            const today = new Date();
+            inseminationDate.valueAsDate = today;
+            
+            // Configurar botões específicos
+            calcEquinoBtn.addEventListener('click', function() {
+                animalType.value = 'equino';
+                document.getElementById('calculadora').scrollIntoView({behavior: 'smooth'});
+            });
+            
+            calcSuinoBtn.addEventListener('click', function() {
+                animalType.value = 'suino';
+                document.getElementById('calculadora').scrollIntoView({behavior: 'smooth'});
+            });
+
+            calculateBtn.addEventListener('click', function() {
+                if (!inseminationDate.value) {
+                    alert('Por favor, selecione a data da inseminação/cobertura');
+                    return;
+                }
+                
+                const selectedDate = new Date(inseminationDate.value);
+                const today = new Date();
+                let gestationDays, animalName, animalTypeName;
+                
+                if (animalType.value === 'equino') {
+                    gestationDays = 340;
+                    animalName = 'égua';
+                    animalTypeName = 'equino';
+                } else {
+                    gestationDays = 114;
+                    animalName = 'porca';
+                    animalTypeName = 'suíno';
+                }
+                
+                const birthDate = new Date(selectedDate);
+                birthDate.setDate(selectedDate.getDate() + gestationDays);
+                
+                // Calcular progresso atual
+                const elapsedDays = Math.floor((today - selectedDate) / (1000 * 60 * 60 * 24));
+                let progress = Math.min(100, Math.max(0, (elapsedDays / gestationDays) * 100));
+                
+                // Atualizar círculo de progresso
+                const circumference = 2 * Math.PI * 15.9155;
+                const offset = circumference - (progress / 100) * circumference;
+                circleFill.style.strokeDasharray = `${circumference} ${circumference}`;
+                circleFill.style.strokeDashoffset = offset;
+                percentageText.textContent = `${Math.round(progress)}%`;
+                
+                // Calcular trimestres/meses importantes
+                const milestones = calculateMilestones(selectedDate, animalTypeName);
+                
+                // Gerar resultados
+                let resultsHTML = '';
+                
+                if (progress >= 100) {
+                    resultsHTML = `
+                        <div class="alert alert-warning">
+                            <p>A ${animalName} já deveria ter parido!</p>
+                            <p>Data estimada do parto foi: <strong>${formatDate(birthDate)}</strong></p>
+                            <p>Já se passaram <strong>${elapsedDays - gestationDays}</strong> dias desde a data prevista.</p>
+                        </div>
+                    `;
+                } else if (progress <= 0) {
+                    resultsHTML = `
+                        <div class="alert alert-info">
+                            <p>A gestação da ${animalName} está apenas começando.</p>
+                            <p>Data estimada do parto: <strong>${formatDate(birthDate)}</strong></p>
+                            <p>Faltam aproximadamente <strong>${gestationDays}</strong> dias.</p>
+                        </div>
+                    `;
+                } else {
+                    const remainingDays = gestationDays - elapsedDays;
+                    const weeksRemaining = Math.floor(remainingDays / 7);
+                    const daysRemaining = remainingDays % 7;
+                    
+                    resultsHTML = `
+                        <div class="alert alert-success">
+                            <p>Progresso da gestação: <strong>${Math.round(progress)}%</strong></p>
+                            <p>Dias decorridos: <strong>${elapsedDays}</strong></p>
+                            <p>Dias restantes: <strong>${remainingDays}</strong> (${weeksRemaining} semanas e ${daysRemaining} dias)</p>
+                            <p>Data estimada do parto: <strong>${formatDate(birthDate)}</strong></p>
+                        </div>
+                    `;
+                }
+                
+                // Adicionar marcos importantes
+                resultsHTML += `
+                    <h4>Marcos Importantes:</h4>
+                    <ul>
+                        ${milestones.map(milestone => `
+                            <li class="${milestone.passed ? 'passed' : ''}">
+                                <strong>${milestone.name}:</strong> ${formatDate(milestone.date)}
+                                ${milestone.passed ? '(passado)' : `(em ${milestone.daysRemaining} dias)`}
+                                ${milestone.description ? `<span class="tooltip">ℹ️<span class="tooltiptext">${milestone.description}</span></span>` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                
+                resultsContainer.innerHTML = resultsHTML;
+                
+                // Sincronizar slider com o progresso atual
+                if (animalType.value === 'equino') {
+                    horseSlider.value = progress;
+                    horseSlider.dispatchEvent(new Event('input'));
+                } else {
+                    pigSlider.value = progress;
+                    pigSlider.dispatchEvent(new Event('input'));
+                }
+            });
+            
+            // Função para calcular marcos importantes
+            function calculateMilestones(startDate, animalType) {
+                const milestones = [];
+                const today = new Date();
+                
+                if (animalType === 'equino') {
+                    // Marcos para equinos
+                    milestones.push({
+                        name: 'Fim do 1º mês',
+                        date: addDays(startDate, 30),
+                        description: 'Implantaçao do embrião completa'
+                    });
+                    
+                    milestones.push({
+                        name: 'Fim do 3º mês',
+                        date: addDays(startDate, 90),
+                        description: 'Sexo do potro pode ser discernido'
+                    });
+                    
+                    milestones.push({
+                        name: 'Fim do 6º mês',
+                        date: addDays(startDate, 180),
+                        description: 'Pelagem começa a se desenvolver'
+                    });
+                    
+                    milestones.push({
+                        name: 'Fim do 9º mês',
+                        date: addDays(startDate, 270),
+                        description: 'Crescimento acelerado do potro'
+                    });
+                    
+                    milestones.push({
+                        name: 'Início do 11º mês',
+                        date: addDays(startDate, 300),
+                        description: 'Preparação final para o parto'
+                    });
+                } else {
+                    // Marcos para suínos
+                    milestones.push({
+                        name: 'Fim da 2ª semana',
+                        date: addDays(startDate, 14),
+                        description: 'Implantação dos embriões completa'
+                    });
+                    
+                    milestones.push({
+                        name: 'Fim do 1º mês',
+                        date: addDays(startDate, 30),
+                        description: 'Órgãos principais formados'
+                    });
+                    
+                    milestones.push({
+                        name: 'Fim do 2º mês',
+                        date: addDays(startDate, 60),
+                        description: 'Desenvolvimento rápido dos leitões'
+                    });
+                    
+                    milestones.push({
+                        name: '3 meses',
+                        date: addDays(startDate, 90),
+                        description: 'Fase final de crescimento'
+                    });
+                    
+                    milestones.push({
+                        name: '100 dias',
+                        date: addDays(startDate, 100),
+                        description: 'Preparação para o parto'
+                    });
+                }
+                
+                // Adicionar status (passado/futuro) para cada marco
+                milestones.forEach(milestone => {
+                    milestone.passed = milestone.date < today;
+                    milestone.daysRemaining = Math.floor((milestone.date - today) / (1000 * 60 * 60 * 24));
+                });
+                
+                return milestones;
+            }
+            
+            // Função auxiliar para adicionar dias a uma data
+            function addDays(date, days) {
+                const result = new Date(date);
+                result.setDate(result.getDate() + days);
+                return result;
+            }
+            
+            // Função auxiliar para formatar data
+            function formatDate(date) {
+                const options = { day: '2-digit', month: 'long', year: 'numeric' };
+                return date.toLocaleDateString('pt-BR', options);
+            }
+            
+            // Inicializar com um cálculo padrão
+            calculateBtn.click();
+        });
+    </script>
+</body>
+</html>
